@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo -n Password: 
+read -s password
+
+mount //Diskstation/tobias /media/Diskstation/Tobias -o username=tobias,vers=1.0,pass=$password
+mount //Diskstation/Music  /media/Diskstation/Music -o username=tobias,vers=1.0,pass=$password

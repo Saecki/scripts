@@ -1,0 +1,4 @@
+#!/bin/sh
+gsettings set org.gnome.system.proxy.http host "172.30.80.2"
+gsettings set org.gnome.system.proxy.http port 8090
+gsettings set org.gnome.system.proxy mode manual

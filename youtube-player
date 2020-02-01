@@ -1,0 +1,3 @@
+#!/bin/sh
+
+python3 /usr/local/src/ts3musicbot-git/main.py c z

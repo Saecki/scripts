@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+
+import re
+import glob
+import ntpath
+
+music_dir_path = "/media/data/Music/"
+playlist_dir_path = "/media/data/Music/Playlists/"
+cmus_playlist_dir_path = "/home/tobi/.config/cmus/playlists/"
+file_extension = ".m3u"
+
+playlists = glob.glob(playlist_dir_path + "*" + file_extension)
+
+for p in playlists:
+    file_name = ntpath.basename(p)
+    file_name = file_name.replace(file_extension, "")
+    with open(p, "r") as playlist_file:
+        playlist = playlist_file.read()
+        playlist = playlist.replace("\\", "/")
+        playlist = re.sub("#EXT(.*?)\n", "", playlist)
+        cmus_playlist = re.sub("(.*?)/Music/(.*?)\n", music_dir_path + "\\2\n", playlist)
+
+        with open(cmus_playlist_dir_path + file_name, "w") as cmus_playlist_file:
+            cmus_playlist_file.write(cmus_playlist)

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git --git-dir=/usr/local/bin/.scripts/ --work-tree=/usr/local/bin/ $@

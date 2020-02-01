@@ -1,0 +1,38 @@
+#!/usr/bin/python3
+
+import re
+import os
+
+with open("/boot/grub2/grub.cfg", "r") as grub_cfg:
+    config = grub_cfg.read()
+    matches = re.findall("menuentry '(.*?)'(.*?)'(.*?)'", config)
+    entries = []
+    entry_values = []
+    for t in matches:
+        entries.append(t[0])
+        entry_values.append(t[2])
+
+    for i in range(len(entry_values)):
+        print(str(i) + " " + entries[i])
+
+    entry_index_string = input("enter entry number:")
+    entry_index = 0
+    try:
+        entry_index = int(entry_index_string)
+    except:
+        entry_index = 0
+
+    if entry_index < 0:
+        entry_index = 0
+    elif entry_index >= len(entry_values):
+        entry_index = len(entry_values) - 1
+
+    print("booting to entry " + str(entry_index) + " " + entries[entry_index])
+    with open("/boot/grub2/grubenv", "r") as grub_env:
+        old_env = grub_env.read()
+        new_env = re.sub("saved_entry=(.*?)\n", "saved_entry=" + entry_values[entry_index] + "\n", old_env)
+
+    with open("/boot/grub2/grubenv", "w") as grub_env:
+        grub_env.write(new_env)
+
+    os.system("reboot")
