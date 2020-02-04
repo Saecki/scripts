@@ -1,8 +1,19 @@
 #!/bin/sh
 
-echo -n "Password:"
+echo -n "User for Diskstation:"
+read username
+
+if [ -z $username ]
+then
+    username="$USER"
+    echo "No username provided using: $username"
+fi
+
+echo -n "Password for Diskstation:"
 read -s password
 echo
-mount //Diskstation/tobias /media/Diskstation/Tobias -o username=tobias,vers=1.0,pass=$password
-mount //Diskstation/Music  /media/Diskstation/Music -o username=tobias,vers=1.0,pass=$password
+
+mount //Diskstation/Tobias /media/Diskstation/Tobias -o username=$username,vers=1.0,pass=$password
+mount //Diskstation/Music  /media/Diskstation/Music -o username=$username,vers=1.0,pass=$password
+
 echo "done"
