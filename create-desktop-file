@@ -1,0 +1,181 @@
+#!/usr/bin/python3
+
+import sys
+import os
+
+
+class Param:
+
+    def __init__(self, desktop_file_param, long_command_param, short_command_param):
+        self.desktop_file_param = desktop_file_param
+        self.long_command_param = long_command_param
+        self.short_command_param = short_command_param
+
+    def long_param(self):
+        return "--" + self.long_command_param
+
+    def short_param(self):
+        return "-" + self.short_command_param
+
+
+class Params:
+    Type = Param("Type", "type", "t")
+    Name = Param("Name", "name", "n")
+    Exec = Param("Exec", "exec", "e")
+    Icon = Param("Icon", "icon", "i")
+    Comment = Param("Comment", "comment", "c")
+    Keywords = Param("Keywords", "keyword", "k")
+    Categories = Param("Categories", "categories", None)
+    Destination = Param(None, "destination", "d")
+    Filename = Param(None, "filename", "f")
+
+
+class Arg:
+
+    def __init__(self, param):
+        self.param = param
+        self.value = None
+
+    def to_string(self):
+        return self.param.desktop_file_param + "=" + self.value + "\n"
+
+
+params = (
+    Params.Type,
+    Params.Name,
+    Params.Exec,
+    Params.Icon,
+    Params.Comment,
+    Params.Keywords,
+    Params.Categories,
+    Params.Destination,
+    Params.Filename
+)
+default_destination = "/usr/share/applications/"
+
+name = None
+exec = None
+
+
+def parse_args(strings):
+    args = []
+
+    last = None
+
+    for s in strings:
+        for p in params:
+            if s == p.long_param() or s == p.short_param():
+                last = Arg(p)
+                break
+            elif last is not None:
+                last.value = s
+                args.append(last)
+                last = None
+                break
+
+    return args
+
+
+def desktop_file_string(args):
+    global name
+    global exec
+
+    string = "[Desktop Entry]\n"
+
+    type = Arg(Params.Type)
+    type.value = "Application"
+    for a in args:
+        if Params.Type == a.param:
+            type = a
+            break
+
+    string += type.to_string()
+
+    for a in args:
+        if Params.Name == a.param:
+            name = a.value
+            string += a.to_string()
+            break
+
+    for a in args:
+        if Params.Exec == a.param:
+            exec = a.value
+            a.value = os.path.abspath(a.value)
+            string += a.to_string()
+            break
+
+    for a in args:
+        if Params.Icon == a.param:
+            a.value = os.path.abspath(a.value)
+            string += a.to_string()
+            break
+
+    for a in args:
+        if Params.Comment == a.param:
+            string += a.to_string()
+            break
+
+    keywords = []
+    for a in args:
+        if Params.Keywords == a.param:
+            keywords.append(a.value)
+
+    if len(keywords) != 0:
+        string += Params.Keywords.desktop_file_param + "="
+
+        for k in keywords:
+            string += k + ";"
+
+        string += "\n"
+
+    categories = []
+    for a in args:
+        if Params.Categories == a.param:
+            categories.append(a.value)
+
+    if len(categories) != 0:
+        string += Params.Categories.desktop_file_param + "="
+
+        for c in categories:
+            string += c + ";"
+
+        string += "\n"
+
+    return string
+
+
+def args_value(args, param):
+    for a in args:
+        if a.param == param:
+            return a.value
+
+
+def get_destination(args):
+    for a in args:
+        if a.param == Params.Destination:
+            return a.value
+
+    return default_destination
+
+
+def get_filename(args):
+    for a in args:
+        if a.param == Params.Filename:
+            return a.value
+
+    return exec
+
+
+if __name__ == "__main__":
+    strings = sys.argv[1:]
+    args = parse_args(strings)
+
+    content = desktop_file_string(args)
+
+    destination = get_destination(args)
+    filename = get_filename(args) + ".desktop"
+    file_path = os.path.join(destination, filename)
+
+    if name is not None and exec is not None:
+        with open(file_path, "w") as desktop_file:
+            desktop_file.write(content)
