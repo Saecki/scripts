@@ -1,7 +1,4 @@
 #!/bin/sh
 
-cmus& > /dev/null
-cmus-remote -C "clear"
-cmus-remote -C "add /media/data/Music/"
-sleep 1
-cmus-remote -C "q"
+cmus-remote -C "clear"&
+cmus-remote -C "add /media/data/Music/"&
