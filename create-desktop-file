@@ -12,10 +12,23 @@ class Param:
         self.short_command_param = short_command_param
 
     def long_param(self):
-        return "--" + self.long_command_param
+        if self.long_command_param is not None:
+            return "--" + self.long_command_param
+
+        return None
 
     def short_param(self):
-        return "-" + self.short_command_param
+        if self.short_command_param is not None:
+            return "-" + self.short_command_param
+
+        return None
+
+
+class Arg:
+
+    def __init__(self, param, value=None):
+        self.param = param
+        self.value = value
 
 
 class Params:
@@ -28,16 +41,6 @@ class Params:
     Categories = Param("Categories", "categories", None)
     Destination = Param(None, "destination", "d")
     Filename = Param(None, "filename", "f")
-
-
-class Arg:
-
-    def __init__(self, param):
-        self.param = param
-        self.value = None
-
-    def to_string(self):
-        return self.param.desktop_file_param + "=" + self.value + "\n"
 
 
 params = (
@@ -76,78 +79,40 @@ def parse_args(strings):
     return args
 
 
+def to_string(arg):
+    if arg is not None:
+        return arg.param.desktop_file_param + "=" + arg.value + "\n"
+
+    return ""
+
+
 def desktop_file_string(args):
     global name
     global exec
 
     string = "[Desktop Entry]\n"
 
-    type = Arg(Params.Type)
-    type.value = "Application"
-    for a in args:
-        if Params.Type == a.param:
-            type = a
-            break
+    type = get_arg(args, Params.Type)
+    if type is not None:
+        string += to_string(type)
+    else:
+        string += to_string(Arg(Params.Type, value="Application"))
 
-    string += type.to_string()
+    name = get_arg(args, Params.Name)
+    string += to_string(name)
 
-    for a in args:
-        if Params.Name == a.param:
-            name = a.value
-            string += a.to_string()
-            break
+    exec = get_path_arg(args, Params.Exec)
+    string += to_string(exec)
 
-    for a in args:
-        if Params.Exec == a.param:
-            exec = a.value
-            a.value = os.path.abspath(a.value)
-            string += a.to_string()
-            break
+    string += to_string(get_path_arg(args, Params.Icon))
 
-    for a in args:
-        if Params.Icon == a.param:
-            a.value = os.path.abspath(a.value)
-            string += a.to_string()
-            break
+    string += to_string(get_arg(args, Params.Comment))
 
-    for a in args:
-        if Params.Comment == a.param:
-            string += a.to_string()
-            break
+    string += to_string(get_list_arg(args, Params.Keywords))
 
-    keywords = []
-    for a in args:
-        if Params.Keywords == a.param:
-            keywords.append(a.value)
-
-    if len(keywords) != 0:
-        string += Params.Keywords.desktop_file_param + "="
-
-        for k in keywords:
-            string += k + ";"
-
-        string += "\n"
-
-    categories = []
-    for a in args:
-        if Params.Categories == a.param:
-            categories.append(a.value)
-
-    if len(categories) != 0:
-        string += Params.Categories.desktop_file_param + "="
-
-        for c in categories:
-            string += c + ";"
-
-        string += "\n"
+    string += to_string(get_list_arg(args, Params.Categories))
 
     return string
-
-
-def args_value(args, param):
-    for a in args:
-        if a.param == param:
-            return a.value
 
 
 def get_destination(args):
@@ -163,7 +128,40 @@ def get_filename(args):
         if a.param == Params.Filename:
             return a.value
 
-    return exec
+    return os.path.basename(exec.value)
+
+
+def get_arg(args, param):
+    for a in args:
+        if a.param == param:
+            return a
+
+    return None
+
+
+def get_path_arg(args, param):
+    a = get_arg(args, param)
+    if a is not None:
+        a.value = os.path.abspath(a.value)
+        return a
+
+    return None
+
+
+def get_list_arg(args, param):
+    values = []
+    for a in args:
+        if a.param == param:
+            values.append(a.value)
+
+    if len(values) > 0:
+        value = ""
+        for v in values:
+            value += v + ";"
+
+        return Arg(param, value=value)
+
+    return None
 
 
 if __name__ == "__main__":
