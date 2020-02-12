@@ -13,7 +13,7 @@ echo -n "Password for Diskstation:"
 read -s password
 echo
 
-mount //Diskstation/Tobias /media/Diskstation/Tobias -o username=$username,vers=1.0,pass=$password
-mount //Diskstation/Music  /media/Diskstation/Music -o username=$username,vers=1.0,pass=$password
+mount //Diskstation/Tobias /mnt/Diskstation/Tobias -o username=$username,vers=1.0,pass=$password
+mount //Diskstation/Music  /mnt/Diskstation/Music -o username=$username,vers=1.0,pass=$password
 
 echo "done"
