@@ -36,6 +36,7 @@ class Params:
     Name = Param("Name", "name", "n")
     Exec = Param("Exec", "exec", "e")
     Icon = Param("Icon", "icon", "i")
+    GlobalIcon = Param("Icon", "global-icon", "g")
     Comment = Param("Comment", "comment", "c")
     Keywords = Param("Keywords", "keyword", "k")
     Categories = Param("Categories", "categories", None)
@@ -48,6 +49,7 @@ params = (
     Params.Name,
     Params.Exec,
     Params.Icon,
+    Params.GlobalIcon,
     Params.Comment,
     Params.Keywords,
     Params.Categories,
@@ -58,6 +60,7 @@ default_destination = "/usr/share/applications/"
 
 name = None
 exec = None
+icon = None
 
 
 def parse_args(strings):
@@ -89,6 +92,7 @@ def to_string(arg):
 def desktop_file_string(args):
     global name
     global exec
+    global icon
 
     string = "[Desktop Entry]\n"
 
@@ -104,7 +108,11 @@ def desktop_file_string(args):
     exec = get_path_arg(args, Params.Exec)
     string += to_string(exec)
 
-    string += to_string(get_path_arg(args, Params.Icon))
+    icon = get_path_arg(args, Params.Icon)
+    if icon is None:
+        icon = get_arg(args, Params.GlobalIcon)
+
+    string += to_string(icon)
 
     string += to_string(get_arg(args, Params.Comment))
 
