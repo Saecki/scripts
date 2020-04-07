@@ -185,3 +185,7 @@ if __name__ == "__main__":
     if name is not None and exec is not None:
         with open(file_path, "w") as desktop_file:
             desktop_file.write(content)
+            print("created " + filename + ".desktop")
+            exit()
+
+    print("not enough arguments")
