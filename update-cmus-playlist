@@ -1,8 +1,5 @@
 #!/bin/sh
-
 root_dir="/mnt/data/Music/"
 cmus_playlist_dir="$HOME/.config/cmus/playlists/"
 
-/usr/local/bin/playlist_localizer --root-dir $root_dir --output-dir $cmus_playlist_dir
-
-
+/usr/local/bin/playlist_localizer -m $root_dir -o $cmus_playlist_dir
