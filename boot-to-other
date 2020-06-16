@@ -3,7 +3,7 @@
 import re
 import os
 
-with open("/boot/grub2/grub.cfg", "r") as grub_cfg:
+with open("/etc/grub2-efi.cfg", "r") as grub_cfg:
     config = grub_cfg.read()
     matches = re.findall("menuentry '(.*?)'(.*?)'(.*?)'", config)
     entries = []
