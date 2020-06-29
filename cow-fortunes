@@ -1,6 +1,6 @@
 #!/bin/sh
 
-
+duration=5
 
 while getopts "d:" opt
 do

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-/usr/bin/git --git-dir=/usr/local/bin/.scripts/ --work-tree=/usr/local/bin/ $@
+/usr/bin/git --git-dir=/usr/local/bin/.scripts/ --work-tree=/usr/local/bin/ "$@"

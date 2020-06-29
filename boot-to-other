@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import re
 import os
@@ -20,12 +20,12 @@ with open("/etc/grub2-efi.cfg", "r") as grub_cfg:
     try:
         entry_index = int(entry_index_string)
     except:
-        entry_index = 0
+        print("not a valid index, exiting...")
+        exit()
 
-    if entry_index < 0:
-        entry_index = 0
-    elif entry_index >= len(entry_values):
-        entry_index = len(entry_values) - 1
+    if entry_index < 0 or entry_index >= len(entry_values):
+        print("not a valid index, exiting...")
+        exit()
 
     print("booting to entry " + str(entry_index) + " " + entries[entry_index])
     with open("/boot/grub2/grubenv", "r") as grub_env:
