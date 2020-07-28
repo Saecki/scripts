@@ -27,7 +27,7 @@ then
    echo
 fi
 
-mount //Diskstation/Tobias /mnt/Diskstation/Tobias -o username=$username,pass=$password
-mount //Diskstation/Music  /mnt/Diskstation/Music -o username=$username,pass=$password
+mount //Diskstation/Tobias /mnt/Diskstation/Tobias -o user=$username,pass=$password,file_mode=0777,dir_mode=0777
+mount //Diskstation/Music  /mnt/Diskstation/Music -o user=$username,pass=$password,file_mode=0777,dir_mode=0777
 
 echo "done"
