@@ -1,0 +1,13 @@
+#!/bin/sh
+
+dirname=$(dirname $1)
+name=$(basename $1)
+
+for s in "${@:2}"; do
+    name="$name $s"
+done
+
+filename="$dirname/$name.md"
+
+echo "# $name" > "$filename"
+$EDITOR "$filename"
