@@ -1,13 +1,27 @@
 #!/bin/sh
 
-dirname=$(dirname $1)
-name=$(basename $1)
+rename_file() {
+    line=$(head -n 1 "$1")
+    line=${line:2}
+    mv "$1" "$line.md"
+}
 
-for s in "${@:2}"; do
-    name="$name $s"
-done
-
-filename="$dirname/$name.md"
-
-echo "# $name" > "$filename"
-$EDITOR "$filename"
+if [ -f "$1" ]; then
+    $EDITOR "$1" -c AutoSaveToggle
+    rename_file "$1"
+else
+    dirname=$(dirname $1)
+    date=$(date)
+    date=${date:0:10}
+    name="$date $(basename $1)"
+    
+    for a in "${@:2}"; do
+        name="$name $a"
+    done
+    
+    filename="$dirname/$name.md"
+    
+    echo "# $name" >> "$filename"
+    $EDITOR "$filename" -c AutoSaveToggle
+    rename_file "$filename"
+fi
