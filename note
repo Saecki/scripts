@@ -2,8 +2,14 @@
 
 rename_file() {
     line=$(head -n 1 "$1")
-    line=${line:2}
-    mv "$1" "$line.md"
+    if [ "${line:0:2}" == "# " ]; then
+        header=${line:2}
+        filename=$(basename "$1")
+        if [ "$header.md" != "$filename" ]; then
+            dir=$(dirname "$1")
+            mv "$1" "$dir/$header.md"
+        fi
+    fi
 }
 
 if [ -f "$1" ]; then
