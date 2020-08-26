@@ -3,11 +3,11 @@
 rename_file() {
     line=$(head -n 1 "$1")
     if [ "${line:0:2}" == "# " ]; then
-        header=${line:2}
+        title=${line:2}
         filename=$(basename "$1")
-        if [ "$header.md" != "$filename" ]; then
+        if [ "$title.md" != "$filename" ]; then
             dir=$(dirname "$1")
-            mv "$1" "$dir/$header.md"
+            mv "$1" "$dir/$title.md"
         fi
     fi
 }
