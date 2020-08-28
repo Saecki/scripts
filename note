@@ -13,21 +13,28 @@ rename_file() {
 }
 
 if [ -f "$1" ]; then
-    $EDITOR "$1" -c AutoSaveToggle
-    rename_file "$1"
+    filename="$1"
 else
     dirname=$(dirname $1)
-    date=$(date)
-    date=${date:0:10}
-    name="$date $(basename $1)"
-    
-    for a in "${@:2}"; do
-        name="$name $a"
-    done
-    
-    filename="$dirname/$name.md"
-    
-    echo "# $name" >> "$filename"
-    $EDITOR "$filename" -c AutoSaveToggle
-    rename_file "$filename"
+    basename=$(basename $1)
+
+    if [ "$basename" == "_" ]; then
+        for f in $dirname/*; do
+            filename="$f"
+        done
+    else
+        date=$(date)
+        date=${date:0:10}
+        name="$date $basename"
+        
+        for a in "${@:2}"; do
+            name="$name $a"
+        done
+        
+        filename="$dirname/$name.md"
+        echo "# $name" >> "$filename"
+    fi
 fi
+
+$EDITOR "$filename" -c AutoSaveToggle
+rename_file "$filename"
