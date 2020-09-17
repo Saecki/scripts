@@ -14,6 +14,9 @@ rename_file() {
 
 if [ -f "$1" ]; then
     filename="$1"
+elif [ -d "$1" ]; then
+    echo "$1 is a dir"
+    exit 0
 else
     dirname=$(dirname $1)
     basename=$(basename $1)
@@ -38,3 +41,4 @@ fi
 
 $EDITOR "$filename" -c AutoSaveToggle
 rename_file "$filename"
+
