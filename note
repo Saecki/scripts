@@ -35,7 +35,10 @@ else
         done
         
         filename="$dirname/$name.md"
-        echo "# $name" >> "$filename"
+
+        if [ !-f "$filename" ]; then
+            echo "# $name" >> "$filename"
+        fi
     fi
 fi
 
