@@ -36,7 +36,9 @@ else
         
         filename="$dirname/$name.md"
 
-        if [ !-f "$filename" ]; then
+        if [ -f "$filename" ]; then
+            echo "already exists"
+        else
             echo "# $name" >> "$filename"
         fi
     fi
