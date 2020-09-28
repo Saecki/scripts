@@ -1,22 +1,27 @@
 #!/bin/sh
 
+rename=true
+
 rename_file() {
     line=$(head -n 1 "$1")
     if [ "${line:0:2}" == "# " ]; then
-        title=${line:2}
-        filename=$(basename "$1")
-        if [ "$title.md" != "$filename" ]; then
+        new_name="${line:2}.md"
+        old_name=$(basename "$1")
+
+        if [ "$new_name" != "$old_name" ]; then
+            echo "renaming $old_name to $new_name"
             dir=$(dirname "$1")
-            mv "$1" "$dir/$title.md"
+            mv "$1" "$dir/$new_name"
         fi
     fi
 }
-
-if [ -f "$1" ]; then
+if [ -z "$1" ]; then
+    filename="."
+elif [ -f "$1" ]; then
     filename="$1"
 elif [ -d "$1" ]; then
-    echo "$1 is a dir"
-    exit 0
+    filename="$1"
+    rename=false
 else
     dirname=$(dirname $1)
     basename=$(basename $1)
@@ -45,5 +50,7 @@ else
 fi
 
 $EDITOR "$filename" -c AutoSaveToggle
-rename_file "$filename"
+if [ $rename == true ]; then
+    rename_file "$filename"
+fi
 
