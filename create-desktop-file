@@ -6,20 +6,28 @@ import os
 
 class Param:
 
-    def __init__(self, desktop_file_param, long_command_param, short_command_param):
+    def __init__(
+            self,
+            desktop_file_param,
+            long_cmd_param,
+            short_cmd_param,
+            param_name,
+            description):
         self.desktop_file_param = desktop_file_param
-        self.long_command_param = long_command_param
-        self.short_command_param = short_command_param
+        self.long_cmd_param = long_cmd_param
+        self.short_cmd_param = short_cmd_param
+        self.param_name = param_name
+        self.description = description
 
     def long_param(self):
-        if self.long_command_param is not None:
-            return "--" + self.long_command_param
+        if self.long_cmd_param is not None:
+            return "--" + self.long_cmd_param
 
         return None
 
     def short_param(self):
-        if self.short_command_param is not None:
-            return "-" + self.short_command_param
+        if self.short_cmd_param is not None:
+            return "-" + self.short_cmd_param
 
         return None
 
@@ -32,16 +40,16 @@ class Arg:
 
 
 class Params:
-    Type = Param("Type", "type", "t")
-    Name = Param("Name", "name", "n")
-    Exec = Param("Exec", "exec", "e")
-    Icon = Param("Icon", "icon", "i")
-    GlobalIcon = Param("Icon", "global-icon", "g")
-    Comment = Param("Comment", "comment", "c")
-    Keywords = Param("Keywords", "keyword", "k")
-    Categories = Param("Categories", "categories", None)
-    Destination = Param(None, "destination", "d")
-    Filename = Param(None, "filename", "f")
+    Type = Param("Type", "type", "t", "<type>", "The type by default Application.")
+    Name = Param("Name", "name", "n", "<name>", "The display name of the application.")
+    Exec = Param("Exec", "exec", "e", "<file>", "The path to a file that will be executed.")
+    Icon = Param("Icon", "icon", "i", "<icon file>", "A path to an icon.")
+    GlobalIcon = Param("Icon", "global-icon", "g", "<icon name>", "A global icon which is included in the icon theme.")
+    Comment = Param("Comment", "comment", "c", "<comment>", "A comment.")
+    Keywords = Param("Keywords", "keyword", "k", "<keyword>", "A keyword (multiple values are supported).")
+    Categories = Param("Categories", "category", None, "<category>", "A category (multiple values are supported).")
+    Destination = Param(None, "destination", "d", "<dir>", "The destination directory of the .desktop file by default /usr/share/applications.")
+    Filename = Param(None, "filename", "f", "<filename>", "The filename of the .desktop file without extensions.")
 
 
 params = (
@@ -63,6 +71,55 @@ exec = None
 icon = None
 
 
+def help_string():
+    help_string = """create-desktop-file
+A script to create .desktop files easily.
+
+USAGE:
+    create-desktop-file -e FILE -n NAME [OPTIONS]
+
+OPTIONS:
+"""
+
+    longest_param_length = 0
+    for p in params:
+        long_param = p.long_param()
+        if long_param is not None:
+            length = len(long_param)
+
+            if length > longest_param_length:
+                longest_param_length = length
+    
+    longest_name_length = 0
+    for p in params:
+        param_name = p.param_name
+        if param_name is not None:
+            length = len(param_name)
+
+            if length > longest_name_length:
+                longest_name_length = length
+
+    for p in params:
+        short_param = p.short_param()
+        if short_param is None:
+            short_param = "  "
+    
+        long_param = p.long_param()
+        if long_param is None:
+            long_param = ""
+        length_diff = longest_param_length - len(long_param)
+        
+        param_name = p.param_name
+        if param_name is None:
+            param_name = ""
+        length_diff += longest_name_length - len(param_name)
+        param_name += " " * length_diff
+
+        help_string += "    " + short_param + " " + long_param + " " + param_name + "    " + p.description + "\n"
+
+    return (help_string)
+
+
 def parse_args(strings):
     args = []
 
@@ -70,7 +127,10 @@ def parse_args(strings):
 
     for s in strings:
         for p in params:
-            if s == p.long_param() or s == p.short_param():
+            if s == "--help" or s == "-h":
+                print(help_string())
+                exit()
+            elif s == p.long_param() or s == p.short_param():
                 last = Arg(p)
                 break
             elif last is not None:
@@ -89,7 +149,7 @@ def to_string(arg):
     return ""
 
 
-def desktop_file_string(args):
+def desktop_file(args):
     global name
     global exec
     global icon
@@ -176,16 +236,18 @@ if __name__ == "__main__":
     strings = sys.argv[1:]
     args = parse_args(strings)
 
-    content = desktop_file_string(args)
-
-    destination = get_destination(args)
-    filename = get_filename(args) + ".desktop"
-    file_path = os.path.join(destination, filename)
+    content = desktop_file(args)
 
     if name is not None and exec is not None:
+        destination = get_destination(args)
+        filename = get_filename(args) + ".desktop"
+        file_path = os.path.join(destination, filename)
+
         with open(file_path, "w") as desktop_file:
             desktop_file.write(content)
             print("created " + filename)
             exit()
 
     print("not enough arguments")
+    print(help_string())
+
