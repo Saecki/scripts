@@ -1,3 +1,0 @@
-#!/bin/sh
-
-make clean install -C /usr/local/src/st

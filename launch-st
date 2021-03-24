@@ -1,3 +1,0 @@
-#!/bin/sh
-xrdb .Xdefaults
-st -T "magic box"
