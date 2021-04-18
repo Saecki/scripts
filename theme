@@ -2,18 +2,18 @@
 
 apply() {
     gsettings set org.gnome.desktop.interface gtk-theme "$1"
-    gsettings set org.gnome.shell.extensions.user-theme name "Layan-dark-solid"
+    gsettings set org.gnome.shell.extensions.user-theme name 'Layan-dark-solid'
 }
 
 toggle() {
     case "$1" in
         "'Layan-light-solid'" )
             alco -a apply minedark.yml&
-            apply "Layan-dark-solid"
+            apply 'Layan-dark-solid'
             ;;
         "'Layan-dark-solid'" )
             alco -a apply minelight.yml&
-            apply "Layan-light-solid"
+            apply 'Layan-light-solid'
             ;;
     esac
 }

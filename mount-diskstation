@@ -27,7 +27,7 @@ then
    echo
 fi
 
-mount -t nfs 192.168.178.26:/volume1/Tobias /mnt/Diskstation/Tobias
-mount //Diskstation/Music  /mnt/Diskstation/Music -o user=$username,pass=$password,file_mode=0777,dir_mode=0777
+mount //Diskstation/Tobias  /mnt/Diskstation/Tobias -o user=$username,pass=$password,gid=1000,uid=1000
+mount //Diskstation/Music  /mnt/Diskstation/Music -o user=$username,pass=$password,gid=1000,uid=1000
 
 echo "done"
