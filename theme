@@ -8,12 +8,13 @@ apply() {
 toggle() {
     case "$1" in
         "'Layan-light-solid'" )
-            alco -a apply minedark.yml&
-            apply 'Layan-dark-solid'
+            dark
             ;;
         "'Layan-dark-solid'" )
-            alco -a apply minelight.yml&
-            apply 'Layan-light-solid'
+            light
+            ;;
+        * )
+            dark
             ;;
     esac
 }
